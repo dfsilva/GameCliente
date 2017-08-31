@@ -1,5 +1,6 @@
 package com.anhanguera.gamecliente;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,28 +28,34 @@ public class MainActivity extends AppCompatActivity {
 
             String login = ((EditText) findViewById(R.id.editText)).getText().toString();
 
-            new Thread(() -> {
-                ManagedChannel canal = ManagedChannelBuilder.forAddress("10.0.2.2", 50051)
-                        .usePlaintext(true).build();
-                AutenticacaoGrpc.AutenticacaoBlockingStub stub
-                        = AutenticacaoGrpc.newBlockingStub(canal);
+            new AsyncTask<Void, Void, AutenticacaoResponse>(){
+                @Override
+                protected AutenticacaoResponse doInBackground(Void... voids) {
 
-                AutenticacaoRequest request = AutenticacaoRequest.newBuilder()
-                        .setUsuario(login).build();
+                    ManagedChannel canal = ManagedChannelBuilder.forAddress("10.0.2.2", 50051)
+                            .usePlaintext(true).build();
+                    AutenticacaoGrpc.AutenticacaoBlockingStub stub
+                            = AutenticacaoGrpc.newBlockingStub(canal);
 
-                AutenticacaoResponse response =  stub.autenticar(request);
+                    AutenticacaoRequest request = AutenticacaoRequest.newBuilder()
+                            .setUsuario(login).build();
 
-                if(response.getCodigo() < 0){
-                    handler.post(()->{
-                        Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
-                    });
-                }else{
-                    handler.post(()->{
-                        Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
-                    });
+                    return stub.autenticar(request);
                 }
 
-            }).start();
+                @Override
+                protected void onPostExecute(AutenticacaoResponse response) {
+                    if(response.getCodigo() < 0){
+                        handler.post(()->{
+                            Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+                    }else{
+                        handler.post(()->{
+                            Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+                    }
+                }
+            }.execute();
         });
     }
 }
