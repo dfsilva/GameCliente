@@ -63,16 +63,19 @@ protobuf {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // CURRENT_GRPC_VERSION
+    // CURRENT_GRPC_VERSION
+    // CURRENT_GRPC_VERSION
+
+
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
-    compile 'io.grpc:grpc-okhttp:1.5.0' // CURRENT_GRPC_VERSION
-    compile 'io.grpc:grpc-protobuf-lite:1.5.0' // CURRENT_GRPC_VERSION
-    compile 'io.grpc:grpc-stub:1.5.0' // CURRENT_GRPC_VERSION
+    compile 'io.grpc:grpc-okhttp:1.5.0'
+    compile 'io.grpc:grpc-protobuf-lite:1.5.0'
+    compile 'io.grpc:grpc-stub:1.5.0'
     compile 'javax.annotation:javax.annotation-api:1.2'
-
     compile 'com.annimon:stream:1.1.8'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'io.reactivex.rxjava2:rxjava:2.1.2'
-
 }
