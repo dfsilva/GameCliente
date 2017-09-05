@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -24,38 +23,47 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.button).setOnClickListener(view -> {
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String login = ((EditText) findViewById(R.id.editText)).getText().toString();
 
-            String login = ((EditText) findViewById(R.id.editText)).getText().toString();
+                //Executa um código em background
+                new AsyncTask<Void, Void, AutenticacaoResponse>(){
+                    @Override
+                    protected AutenticacaoResponse doInBackground(Void... voids) {
 
-            new AsyncTask<Void, Void, AutenticacaoResponse>(){
-                @Override
-                protected AutenticacaoResponse doInBackground(Void... voids) {
+                        ManagedChannel canal = ManagedChannelBuilder.forAddress("10.0.2.2", 50051)
+                                .usePlaintext(true).build();
+                        AutenticacaoGrpc.AutenticacaoBlockingStub stub
+                                = AutenticacaoGrpc.newBlockingStub(canal);
 
-                    ManagedChannel canal = ManagedChannelBuilder.forAddress("10.0.2.2", 50051)
-                            .usePlaintext(true).build();
-                    AutenticacaoGrpc.AutenticacaoBlockingStub stub
-                            = AutenticacaoGrpc.newBlockingStub(canal);
+                        AutenticacaoRequest request = AutenticacaoRequest.newBuilder()
+                                .setUsuario(login).build();
 
-                    AutenticacaoRequest request = AutenticacaoRequest.newBuilder()
-                            .setUsuario(login).build();
-
-                    return stub.autenticar(request);
-                }
-
-                @Override
-                protected void onPostExecute(AutenticacaoResponse response) {
-                    if(response.getCodigo() < 0){
-                        handler.post(()->{
-                            Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
-                        });
-                    }else{
-                        handler.post(()->{
-                            Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
-                        });
+                        return stub.autenticar(request);
                     }
-                }
-            }.execute();
+
+                    @Override
+                    protected void onPostExecute(final AutenticacaoResponse response) {
+                        if(response.getCodigo() < 0){
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }else{
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                }.execute();
+            }
         });
     }
 }
