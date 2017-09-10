@@ -14,8 +14,6 @@ import android.widget.Toast;
 import br.com.diegosilva.grpc.hello.AutenticacaoGrpc;
 import br.com.diegosilva.grpc.hello.AutenticacaoRequest;
 import br.com.diegosilva.grpc.hello.AutenticacaoResponse;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,7 +22,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        setTitle("Game App");
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override

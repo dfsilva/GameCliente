@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +32,7 @@ public class ListarUsuariosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listar_usuarios);
+        setTitle("Usuários Dispoíveis - "+GameApp.gameApp().getUsuarioAutenticado());
 
         list = (RecyclerView) findViewById(R.id.list);
         adapterUsuarios = new UsuariosAdapter();
@@ -40,6 +40,10 @@ public class ListarUsuariosActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         list.setLayoutManager(layout);
 
+       listarUsuarios();
+    }
+
+    private void listarUsuarios(){
         StreamObserver<Usuario> responseObserver = new StreamObserver<Usuario>() {
             @Override
             public void onNext(final Usuario value) {
@@ -52,16 +56,16 @@ public class ListarUsuariosActivity extends AppCompatActivity {
             }
             @Override
             public void onError(Throwable t) {
-
             }
             @Override
             public void onCompleted() {
-
             }
         };
 
         Usuario request = Usuario.newBuilder().setNome(GameApp.gameApp().getUsuarioAutenticado()).build();
-        UsuariosGrpc.newStub(GameApp.gameApp().getChannel()).listarUsuarios(request, responseObserver);
+        UsuariosGrpc.UsuariosStub stub = UsuariosGrpc.newStub(GameApp.gameApp().getChannel());
+
+        stub.listarUsuarios(request, responseObserver);
     }
 
 
@@ -91,7 +95,6 @@ public class ListarUsuariosActivity extends AppCompatActivity {
             notifyItemInserted(usuarios.size());
         }
     }
-
 
     class UsuarioViewHolder extends RecyclerView.ViewHolder{
         final TextView txView;
