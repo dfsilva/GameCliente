@@ -1,21 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
 
-
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
     buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.anhanguera.gamecliente"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-        jackOptions {
-            enabled true
-        }
     }
     buildTypes {
         release {
@@ -31,10 +26,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
+
+def grpcVersion = '1.6.0'
 
 protobuf {
     protoc {
@@ -45,7 +42,7 @@ protobuf {
             artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
         }
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.5.0' // CURRENT_GRPC_VERSION
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" // CURRENT_GRPC_VERSION
         }
     }
     generateProtoTasks {
@@ -63,17 +60,13 @@ protobuf {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    // CURRENT_GRPC_VERSION
-    // CURRENT_GRPC_VERSION
-    // CURRENT_GRPC_VERSION
-
-
-    compile 'com.android.support:appcompat-v7:26.+'
+    compile 'com.android.support:appcompat-v7:25.+'
+    compile 'com.android.support:design:25.+'
+    compile 'com.android.support:recyclerview-v7:25.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'io.grpc:grpc-okhttp:1.5.0'
-    compile 'io.grpc:grpc-protobuf-lite:1.5.0'
-    compile 'io.grpc:grpc-stub:1.5.0'
+    compile "io.grpc:grpc-okhttp:${grpcVersion}"
+    compile "io.grpc:grpc-protobuf-lite:${grpcVersion}"
+    compile "io.grpc:grpc-stub:${grpcVersion}"
     compile 'javax.annotation:javax.annotation-api:1.2'
     compile 'com.annimon:stream:1.1.8'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'

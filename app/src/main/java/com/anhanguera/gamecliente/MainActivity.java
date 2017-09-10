@@ -1,7 +1,9 @@
 package com.anhanguera.gamecliente;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,38 +26,41 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.button).setOnClickListener(view -> {
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String login = ((EditText) findViewById(R.id.editText)).getText().toString();
 
-            String login = ((EditText) findViewById(R.id.editText)).getText().toString();
+                new AsyncTask<Void, Void, AutenticacaoResponse>(){
+                    @Override
+                    protected AutenticacaoResponse doInBackground(Void... voids) {
 
-            new AsyncTask<Void, Void, AutenticacaoResponse>(){
-                @Override
-                protected AutenticacaoResponse doInBackground(Void... voids) {
 
-                    ManagedChannel canal = ManagedChannelBuilder.forAddress("10.0.2.2", 50051)
-                            .usePlaintext(true).build();
-                    AutenticacaoGrpc.AutenticacaoBlockingStub stub
-                            = AutenticacaoGrpc.newBlockingStub(canal);
+                        AutenticacaoGrpc.AutenticacaoBlockingStub stub
+                                = AutenticacaoGrpc.newBlockingStub(GameApp.gameApp().getChannel());
 
-                    AutenticacaoRequest request = AutenticacaoRequest.newBuilder()
-                            .setUsuario(login).build();
+                        AutenticacaoRequest request = AutenticacaoRequest.newBuilder()
+                                .setUsuario(login).build();
 
-                    return stub.autenticar(request);
-                }
-
-                @Override
-                protected void onPostExecute(AutenticacaoResponse response) {
-                    if(response.getCodigo() < 0){
-                        handler.post(()->{
-                            Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
-                        });
-                    }else{
-                        handler.post(()->{
-                            Toast.makeText(getBaseContext(), response.getMessage(), Toast.LENGTH_LONG).show();
-                        });
+                        return stub.autenticar(request);
                     }
-                }
-            }.execute();
+
+                    @Override
+                    protected void onPostExecute(final AutenticacaoResponse response) {
+                        if(response.getCodigo() < 0){
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Snackbar.make(findViewById(android.R.id.content), response.getMessage(), Snackbar.LENGTH_LONG).show();
+                                }
+                            });
+                        }else{
+                            GameApp.gameApp().setUsuarioAutenticado(login);
+                            startActivity(new Intent(MainActivity.this, ListarUsuariosActivity.class));
+                        }
+                    }
+                }.execute();
+            }
         });
     }
 }
