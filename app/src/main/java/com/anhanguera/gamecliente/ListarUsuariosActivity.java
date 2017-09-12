@@ -32,7 +32,7 @@ public class ListarUsuariosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listar_usuarios);
-        setTitle("Usuários Dispoíveis - "+GameApp.gameApp().getUsuarioAutenticado());
+        setTitle("Usuários Disponíveis - "+GameApp.gameApp().getUsuarioAutenticado());
 
         list = (RecyclerView) findViewById(R.id.list);
         adapterUsuarios = new UsuariosAdapter();

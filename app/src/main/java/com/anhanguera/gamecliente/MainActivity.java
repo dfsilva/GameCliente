@@ -29,9 +29,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 final String login = ((EditText) findViewById(R.id.editText)).getText().toString();
 
                 new AsyncTask<Void, Void, AutenticacaoResponse>(){
+
+                    //Executa o código pesado, asincrono
                     @Override
                     protected AutenticacaoResponse doInBackground(Void... voids) {
 
@@ -45,15 +48,11 @@ public class MainActivity extends AppCompatActivity {
                         return stub.autenticar(request);
                     }
 
+                    //atualiza a interface
                     @Override
                     protected void onPostExecute(final AutenticacaoResponse response) {
                         if(response.getCodigo() < 0){
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Snackbar.make(findViewById(android.R.id.content), response.getMessage(), Snackbar.LENGTH_LONG).show();
-                                }
-                            });
+                            Snackbar.make(findViewById(android.R.id.content), response.getMessage(), Snackbar.LENGTH_LONG).show();
                         }else{
                             GameApp.gameApp().setUsuarioAutenticado(login);
                             startActivity(new Intent(MainActivity.this, ListarUsuariosActivity.class));
